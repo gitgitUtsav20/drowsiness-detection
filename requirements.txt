@@ -2,5 +2,5 @@ streamlit
 streamlit-webrtc
 opencv-python-headless
 imutils
-dlib
+dlib-bin
 numpy
