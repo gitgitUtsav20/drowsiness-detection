@@ -28,8 +28,26 @@ st.set_page_config(page_title="Drowsiness Detection Web App", layout="centered")
 st.title("Drowsiness Detection System 🛡️")
 st.markdown("This web application uses your webcam to detect drowsiness in real-time.")
 
+@st.cache_data
+def get_ice_servers():
+    """Use Twilio's TURN server to avoid firewall connection timeouts."""
+    try:
+        from twilio.rest import Client
+        # Pull TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN from Streamlit's secrets
+        account_sid = st.secrets["TWILIO_ACCOUNT_SID"]
+        auth_token = st.secrets["TWILIO_AUTH_TOKEN"]
+        client = Client(account_sid, auth_token)
+        token = client.tokens.create()
+        return token.ice_servers
+    except Exception as e:
+        # Fallback to standard STUN server if secrets are missing
+        return [{"urls": ["stun:stun.l.google.com:19302"]}]
+
 RTC_CONFIGURATION = RTCConfiguration(
-    {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+    {
+        "iceServers": get_ice_servers(),
+        "iceTransportPolicy": "relay"
+    }
 )
 
 @st.cache_resource

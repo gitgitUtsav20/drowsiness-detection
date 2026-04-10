@@ -4,3 +4,4 @@ opencv-python-headless
 imutils
 dlib-bin
 numpy
+twilio
